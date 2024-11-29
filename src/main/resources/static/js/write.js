@@ -18,7 +18,22 @@ class WriteModal {
         document.getElementById('writeModalContainer').innerHTML = html;
         this.modal = new bootstrap.Modal(document.getElementById('writeModal'));
         this.setupSubmitEvent();
+        this.setupPasswordToggle();
       });
+  }
+
+  setupPasswordToggle() {
+    const toggleBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener('click', () => {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        toggleBtn.querySelector('i').classList.toggle('bi-eye');
+        toggleBtn.querySelector('i').classList.toggle('bi-eye-slash');
+      });
+    }
   }
 
   setupEventListeners() {
@@ -38,18 +53,12 @@ class WriteModal {
     }
   }
 
-  showWriteModal() {
-    if (this.modal) {
-      this.modal.show();
-      this.resetForm();
+  validatePassword(password) {
+    if (!password.trim()) {
+      alert('비밀번호를 입력해주세요.');
+      return false;
     }
-  }
-
-  resetForm() {
-    const form = document.getElementById('writeForm');
-    if (form) {
-      form.reset();
-    }
+    return true;
   }
 
   submitPost() {
@@ -61,7 +70,8 @@ class WriteModal {
       subject: formData.get('subject'),
       content: formData.get('content'),
       name: formData.get('name'),
-      id: formData.get('id')
+      id: formData.get('id'),
+      password: formData.get('password')
     };
 
     if (!this.validateForm(postData)) {
@@ -110,9 +120,25 @@ class WriteModal {
       alert('아이디를 입력해주세요.');
       return false;
     }
+    if (!this.validatePassword(postData.password)) {
+      return false;
+    }
     return true;
+  }
+
+  showWriteModal() {
+    if (this.modal) {
+      this.modal.show();
+      this.resetForm();
+    }
+  }
+
+  resetForm() {
+    const form = document.getElementById('writeForm');
+    if (form) {
+      form.reset();
+    }
   }
 }
 
-// 인스턴스 생성
 const writeModal = new WriteModal();

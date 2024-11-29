@@ -9,6 +9,7 @@ public class Post {
     private String registDay;
     private int hit;
     private String ip;
+    private String password;
 
     // Getters and Setters
     public int getNum() { return num; }
@@ -34,4 +35,7 @@ public class Post {
     
     public String getIp() { return ip; }
     public void setIp(String ip) { this.ip = ip; }
+    
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 } 

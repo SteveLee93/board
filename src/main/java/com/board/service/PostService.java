@@ -40,7 +40,7 @@ public class PostService {
     }
 
     public void createPost(Post post, String ip) throws SQLException {
-        String sql = "INSERT INTO board (id, name, subject, content, regist_day, hit, ip) VALUES (?, ?, ?, ?, ?, 0, ?)";
+        String sql = "INSERT INTO board (id, name, subject, content, regist_day, hit, ip, password) VALUES (?, ?, ?, ?, ?, 0, ?, ?)";
 
         try (Connection conn = dbManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -53,6 +53,7 @@ public class PostService {
             pstmt.setString(4, post.getContent());
             pstmt.setString(5, now);
             pstmt.setString(6, ip);
+            pstmt.setString(7, post.getPassword());
 
             pstmt.executeUpdate();
         }
@@ -92,6 +93,7 @@ public class PostService {
                 post.setRegistDay(rs.getString("regist_day"));
                 post.setHit(rs.getInt("hit"));
                 post.setIp(rs.getString("ip"));
+                post.setPassword(rs.getString("password"));
             }
 
             // 트랜잭션 커밋
@@ -151,6 +153,7 @@ public class PostService {
                     post.setRegistDay(rs.getString("regist_day"));
                     post.setHit(rs.getInt("hit"));
                     post.setIp(rs.getString("ip"));
+                    post.setPassword(rs.getString("password"));
                     posts.add(post);
                 }
             }
