@@ -1,0 +1,102 @@
+/* 글쓰기 모튼 스타일 */
+.write-btn {
+    background-color: #1a73e8 !important;
+    border: none !important;
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 25px !important;
+    transition: all 0.3s ease !important;
+    font-weight: 500 !important;
+    margin-left: 1rem !important;
+    white-space: nowrap !important;
+    color: white !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.write-btn:hover {
+    background-color: #1557b0 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(26, 115, 232, 0.3) !important;
+}
+
+.write-btn i {
+    font-size: 1.1rem !important;
+}
+
+/* 반응형 스타일 추가 */
+@media (max-width: 768px) {
+    .write-btn {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+}
+
+/* 모달 스타일 */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 2px solid #e9ecef;
+    padding: 1.5rem;
+}
+
+.modal-title {
+    color: #1a73e8;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* 폼 요소 스타일 */
+.form-control {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.form-control:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
+}
+
+/* 모달 버튼 스타일 */
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+
+.modal-footer .btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+}
+
+.modal-footer .btn-primary {
+    background-color: #1a73e8;
+    border: none;
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #1557b0;
+    box-shadow: 0 2px 5px rgba(26, 115, 232, 0.3);
+}
+
+.modal-footer .btn-secondary {
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #e9ecef;
+}
+
+/* 기타 글쓰기 관련 스타일... */ 
