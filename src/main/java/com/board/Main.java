@@ -25,7 +25,6 @@ public class Main {
 		Tomcat.addServlet(ctx, "defaultServlet", new DefaultServlet());
 		ctx.addServletMappingDecoded("/static/*", "defaultServlet");
 		ctx.addServletMappingDecoded("/html/*", "defaultServlet");
-		ctx.addServletMappingDecoded("/components/*", "defaultServlet");
 
 		Tomcat.addServlet(ctx, "postServlet", new PostServlet());
 		ctx.addServletMappingDecoded("/api/post/*", "postServlet");
