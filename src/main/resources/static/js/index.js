@@ -16,6 +16,7 @@ class BoardManager {
         document.addEventListener('DOMContentLoaded', () => {
             this.loadPosts();
             this.setupEventListeners();
+            this.setupSortListeners();
         });
     }
 
@@ -23,15 +24,24 @@ class BoardManager {
         document.getElementById('searchType').addEventListener('change', () => this.searchPosts());
     }
 
+    setupSortListeners() {
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', (e) => {
+                const column = header.dataset.column;
+                this.sortPosts(column);
+            });
+        });
+    }
+
     loadPosts() {
         fetch('/api/post')
             .then(response => response.json())
             .then(data => {
                 this.sortedPosts = [...data];
+                this.totalPosts = data.length;
                 if (this.currentSort.column !== 'num' || this.currentSort.direction !== 'desc') {
                     this.sortPosts(this.currentSort.column, true);
                 } else {
-                    this.totalPosts = data.length;
                     this.displayCurrentPage();
                     this.updatePagination();
                 }
@@ -159,8 +169,10 @@ class BoardManager {
     }
 
     sortPosts(column, forceDirection = false) {
+        const currentHeader = document.querySelector(`.sortable[data-column="${column}"]`);
+        if (!currentHeader) return;  // 헤더가 없으면 종료
+
         const headers = document.querySelectorAll('.sortable');
-        const currentHeader = document.querySelector(`th[onclick="boardManager.sortPosts('${column}')"]`);
 
         if (!forceDirection) {
             if (this.currentSort.column === column) {
@@ -182,23 +194,22 @@ class BoardManager {
             switch (column) {
                 case 'num':
                 case 'hit':
-                    valueA = parseInt(a[column]);
-                    valueB = parseInt(b[column]);
+                    valueA = parseInt(a[column]) || 0;
+                    valueB = parseInt(b[column]) || 0;
                     break;
                 case 'registDay':
-                    valueA = new Date(a[column]);
-                    valueB = new Date(b[column]);
+                    valueA = new Date(a[column] || '').getTime();
+                    valueB = new Date(b[column] || '').getTime();
                     break;
                 default:
                     valueA = (a[column] || '').toLowerCase();
                     valueB = (b[column] || '').toLowerCase();
             }
 
-            if (this.currentSort.direction === 'asc') {
-                return valueA > valueB ? 1 : -1;
-            } else {
-                return valueA < valueB ? 1 : -1;
-            }
+            if (valueA === valueB) return 0;
+            
+            const direction = this.currentSort.direction === 'asc' ? 1 : -1;
+            return valueA > valueB ? direction : -direction;
         });
 
         this.currentPage = 1;
