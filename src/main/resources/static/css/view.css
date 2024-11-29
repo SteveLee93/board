@@ -24,6 +24,36 @@
   color: #495057;
 }
 
+/* 수정 폼 스타일 */
+#editForm {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+#editForm .form-label {
+  color: #495057;
+  font-weight: 500;
+}
+
+#editForm .form-control {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+#editForm .form-control:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
+}
+
+#editForm textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+/* 버튼 스타일 */
 .modal-footer {
   border-top: 1px solid #e9ecef;
   padding: 1rem 1.5rem;
@@ -33,6 +63,18 @@
   padding: 0.5rem 1.5rem;
   border-radius: 25px;
   font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.modal-footer .btn-primary {
+  background-color: #1a73e8;
+  border: none;
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #1557b0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(26, 115, 232, 0.3);
 }
 
 .modal-footer .btn-secondary {
@@ -43,4 +85,40 @@
 
 .modal-footer .btn-secondary:hover {
   background-color: #e9ecef;
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+  .modal-footer .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+
+  #viewButtons,
+  #editButtons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* 애니메이션 효과 */
+.d-none {
+  display: none !important;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

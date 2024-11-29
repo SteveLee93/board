@@ -160,4 +160,33 @@ public class PostService {
         }
         return posts;
     }
+
+    public boolean updatePost(Post post) throws SQLException {
+        String checkSql = "SELECT * FROM board WHERE num = ? AND id = ? AND password = ?";
+        String updateSql = "UPDATE board SET subject = ?, content = ? WHERE num = ?";
+
+        try (Connection conn = dbManager.getConnection()) {
+            // 먼저 권한 확인
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setInt(1, post.getNum());
+                checkStmt.setString(2, post.getId());
+                checkStmt.setString(3, post.getPassword());
+
+                ResultSet rs = checkStmt.executeQuery();
+                if (!rs.next()) {
+                    return false; // 권한 없음
+                }
+            }
+
+            // 권한 확인 후 업데이트
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                updateStmt.setString(1, post.getSubject());
+                updateStmt.setString(2, post.getContent());
+                updateStmt.setInt(3, post.getNum());
+
+                int affected = updateStmt.executeUpdate();
+                return affected > 0;
+            }
+        }
+    }
 }

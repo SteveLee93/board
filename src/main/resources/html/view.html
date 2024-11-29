@@ -27,9 +27,34 @@
           <div class="border-top pt-3">
             <div id="postContent"></div>
           </div>
+          <div id="editForm" class="d-none">
+            <div class="mb-3">
+              <label for="editSubject" class="form-label">제목</label>
+              <input type="text" class="form-control" id="editSubject">
+            </div>
+            <div class="mb-3">
+              <label for="editContent" class="form-label">내용</label>
+              <textarea class="form-control" id="editContent" rows="10"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editId" class="form-label">아이디</label>
+              <input type="text" class="form-control" id="editId">
+            </div>
+            <div class="mb-3">
+              <label for="editPassword" class="form-label">비밀번호</label>
+              <input type="password" class="form-control" id="editPassword">
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+          <div id="viewButtons">
+            <button type="button" class="btn btn-primary" id="editButton">수정</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+          </div>
+          <div id="editButtons" class="d-none">
+            <button type="button" class="btn btn-primary" id="saveButton">저장</button>
+            <button type="button" class="btn btn-secondary" id="cancelButton">취소</button>
+          </div>
         </div>
       </div>
     </div>
