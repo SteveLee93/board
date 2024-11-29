@@ -168,16 +168,44 @@
                 margin-right: 0;
                 margin-bottom: 1rem;
             }
-            
+
             .search-container .input-group {
                 width: 100%;
             }
-            
+
             .write-btn {
                 width: 100%;
                 margin-left: 0;
                 margin-top: 0.5rem;
             }
+        }
+
+        /* 테이블 헤더 부분 수정 */
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sortable:hover {
+            background-color: #e9ecef !important;
+        }
+
+        .sortable i {
+            font-size: 0.8rem;
+            margin-left: 5px;
+            opacity: 0.5;
+        }
+
+        .sortable.asc i::before {
+            content: "\F282" !important;
+            /* bootstrap-icons ascending arrow */
+            opacity: 1;
+        }
+
+        .sortable.desc i::before {
+            content: "\F286" !important;
+            /* bootstrap-icons descending arrow */
+            opacity: 1;
         }
     </style>
 </head>
@@ -186,7 +214,7 @@
     <div class="container">
         <div class="board-container">
             <h2 class="board-title">게시판</h2>
-            
+
             <!-- 검색창과 글쓰기 버튼을 포함하는 상단 영역 -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="search-container d-flex align-items-center flex-grow-1">
@@ -196,8 +224,8 @@
                             <option value="content">내용</option>
                             <option value="name">작성자</option>
                         </select>
-                        <input type="text" class="form-control" id="searchKeyword" 
-                               placeholder="검색어를 입력하세요" oninput="searchPosts()">
+                        <input type="text" class="form-control" id="searchKeyword" placeholder="검색어를 입력하세요"
+                            oninput="searchPosts()">
                     </div>
                     <button class="btn write-btn text-white ms-2" onclick="showWriteModal()">
                         <i class="bi bi-pencil-square"></i> 글쓰기
@@ -209,11 +237,21 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th width="10%" class="text-center">번호</th>
-                        <th width="45%">제목</th>
-                        <th width="15%" class="text-center">작성자</th>
-                        <th width="20%" class="text-center">작성일</th>
-                        <th width="10%" class="text-center">조회수</th>
+                        <th width="10%" class="text-center sortable" onclick="sortPosts('num')">
+                            번호 <i class="bi bi-arrow-down-up"></i>
+                        </th>
+                        <th width="45%" class="sortable" onclick="sortPosts('subject')">
+                            제목 <i class="bi bi-arrow-down-up"></i>
+                        </th>
+                        <th width="15%" class="text-center sortable" onclick="sortPosts('name')">
+                            작성자 <i class="bi bi-arrow-down-up"></i>
+                        </th>
+                        <th width="20%" class="text-center sortable" onclick="sortPosts('registDay')">
+                            작성일 <i class="bi bi-arrow-down-up"></i>
+                        </th>
+                        <th width="10%" class="text-center sortable" onclick="sortPosts('hit')">
+                            조회수 <i class="bi bi-arrow-down-up"></i>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="postList">
@@ -260,6 +298,15 @@
         const postsPerPage = 10;
         let totalPosts = 0;
 
+        // 정렬 상태를 저장할 변수
+        let currentSort = {
+            column: 'num',  // 기본 정렬 컬럼
+            direction: 'desc'  // 기본 정렬 방향
+        };
+
+        // 전역 변수로 현재 정렬된 전체 게시글 데이터 저장
+        let sortedPosts = [];
+
         // 페이지 로드 시 게시글 목록 가져오기
         document.addEventListener('DOMContentLoaded', function () {
             loadPosts();
@@ -270,9 +317,15 @@
             fetch('/api/post')
                 .then(response => response.json())
                 .then(data => {
-                    totalPosts = data.length;
-                    displayPosts(data);
-                    updatePagination();
+                    sortedPosts = [...data];
+                    if (currentSort.column !== 'num' || currentSort.direction !== 'desc') {
+                        // 현재 정렬 상태를 그대로 유지
+                        sortPosts(currentSort.column, true); // 현재 정렬 상태 유지
+                    } else {
+                        totalPosts = data.length;
+                        displayCurrentPage();
+                        updatePagination();
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -282,27 +335,28 @@
 
         // 게시글 표시
         function displayPosts(data) {
-            const postList = document.getElementById('postList');
-            postList.innerHTML = '';
+            sortedPosts = [...data]; // 전체 데이터 저장
+            totalPosts = data.length;
+            displayCurrentPage();
+            updatePagination();
+        }
 
-            // 현재 페이지에 해당하는 게시글만 표시
+        // 현재 페이지 표시 함수
+        function displayCurrentPage() {
             const startIndex = (currentPage - 1) * postsPerPage;
             const endIndex = startIndex + postsPerPage;
-            const currentPagePosts = data.slice(startIndex, endIndex);
+            const currentPagePosts = sortedPosts.slice(startIndex, endIndex);
 
-            currentPagePosts.forEach(post => {
-                const row = document.createElement('tr');
-                row.style.cursor = 'pointer';
-                row.onclick = () => viewPost(post.num);
-                row.innerHTML = `
-                    <td>${post.num}</td>
-                    <td>${post.subject}</td>
-                    <td>${post.name}</td>
-                    <td>${post.registDay}</td>
-                    <td>${post.hit}</td>
-                `;
-                postList.appendChild(row);
-            });
+            const tbody = document.getElementById('postList');
+            tbody.innerHTML = currentPagePosts.map(post => `
+                <tr onclick="viewPost(${post.num})">
+                    <td class="text-center" data-num="${post.num}">${post.num}</td>
+                    <td data-subject="${post.subject}">${post.subject}</td>
+                    <td class="text-center" data-name="${post.name}">${post.name}</td>
+                    <td class="text-center" data-registDay="${post.registDay}">${post.registDay}</td>
+                    <td class="text-center" data-hit="${post.hit}">${post.hit}</td>
+                </tr>
+            `).join('');
         }
 
         // 페이지네이션 업데이트
@@ -348,19 +402,19 @@
             }
         }
 
-        // 페이지 변경
-        function changePage(page) {
-            currentPage = page;
-            loadPosts();
+        // 페이지 변경 함수 수정
+        function changePage(newPage) {
+            currentPage = newPage;
+            displayCurrentPage();
+            updatePagination();
         }
 
-        // 실시간 검색 함수
+        // 검색 함수 수정
         function searchPosts() {
             const searchType = document.getElementById('searchType').value;
             const keyword = document.getElementById('searchKeyword').value.trim();
 
             if (!keyword) {
-                // 검색어가 없으면 전체 목록 표시
                 loadPosts();
                 return;
             }
@@ -373,12 +427,12 @@
                     return response.json();
                 })
                 .then(data => {
+                    sortedPosts = data;  // 검색 결과를 전역 변수에 저장
                     totalPosts = data.length;
-                    currentPage = 1; // 검색 결과의 첫 페이지로 이동
-                    displayPosts(data);
+                    currentPage = 1;
+                    displayCurrentPage();
                     updatePagination();
 
-                    // 검색 결과가 없는 경우
                     if (data.length === 0) {
                         document.getElementById('postList').innerHTML = `
                             <tr>
@@ -407,19 +461,9 @@
 
         // 게시글 상세보기 함수
         function viewPost(num) {
-            console.log('Viewing post:', num);
-
             fetch(`/api/post/${num}`)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error('게시글을 찾을 수 없습니다.');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(post => {
-                    console.log('Post data:', post);
-
                     // null 체크 추가
                     const content = post.content || '';
                     const subject = post.subject || '';
@@ -456,8 +500,10 @@
                     const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
                     viewModal.show();
 
-                    // 게시글 목록 새로고침 (조회수 업데이트를 반영하기 위해)
-                    loadPosts();
+                    // 모달이 닫힐 때 정렬 상태 유지하면서 목록 새로고침
+                    document.getElementById('viewModal').addEventListener('hidden.bs.modal', function () {
+                        loadPosts(); // 수정된 loadPosts 함수 호출
+                    }, { once: true }); // 이벤트 리스너는 한 번만 실행되도록 설정
                 })
                 .catch(error => {
                     console.error('Error details:', error);
@@ -545,6 +591,59 @@
                     console.error('Error:', error);
                     alert('게시글 등록 중 오류가 발생했습니다.');
                 });
+        }
+
+        // 정렬 함수 수정
+        function sortPosts(column, forceDirection = false) {
+            const headers = document.querySelectorAll('.sortable');
+            const currentHeader = document.querySelector(`th[onclick="sortPosts('${column}')"]`);
+
+            // 정렬 방향 결정
+            if (!forceDirection) {
+                if (currentSort.column === column) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.column = column;
+                    currentSort.direction = 'asc';
+                }
+            }
+
+            // 헤더 스타일 초기화 및 설정
+            headers.forEach(header => {
+                header.classList.remove('asc', 'desc');
+            });
+            currentHeader.classList.add(currentSort.direction);
+
+            // 데이터 정렬
+            sortedPosts.sort((a, b) => {
+                let valueA, valueB;
+
+                switch (column) {
+                    case 'num':
+                    case 'hit':
+                        valueA = parseInt(a[column]);
+                        valueB = parseInt(b[column]);
+                        break;
+                    case 'registDay':
+                        valueA = new Date(a[column]);
+                        valueB = new Date(b[column]);
+                        break;
+                    default:
+                        valueA = (a[column] || '').toLowerCase();
+                        valueB = (b[column] || '').toLowerCase();
+                }
+
+                if (currentSort.direction === 'asc') {
+                    return valueA > valueB ? 1 : -1;
+                } else {
+                    return valueA < valueB ? 1 : -1;
+                }
+            });
+
+            // 현재 페이지 업데이트
+            currentPage = 1;
+            displayCurrentPage();
+            updatePagination();
         }
     </script>
 </body>
