@@ -4,6 +4,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 
 import com.board.servlets.MainServlet;
+import com.board.servlets.PostServlet;
 
 import org.apache.catalina.servlets.DefaultServlet;
 
@@ -22,9 +23,12 @@ public class Main {
 		Context ctx = tomcat.addContext("", docBase);
 
 		Tomcat.addServlet(ctx, "defaultServlet", new DefaultServlet());
-		ctx.addServletMappingDecoded("/", "defaultServlet");
+		ctx.addServletMappingDecoded("/static/*", "defaultServlet");
 		ctx.addServletMappingDecoded("/html/*", "defaultServlet");
 		ctx.addServletMappingDecoded("/components/*", "defaultServlet");
+
+		Tomcat.addServlet(ctx, "postServlet", new PostServlet());
+		ctx.addServletMappingDecoded("/api/post/*", "postServlet");
 
 		Tomcat.addServlet(ctx, "mainServlet", new MainServlet());
 		ctx.addServletMappingDecoded("/", "mainServlet");

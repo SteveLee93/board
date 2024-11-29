@@ -4,87 +4,549 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM System</title>
-    <!-- Bootstrap CSS -->
+    <title>게시판</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <style>
         body {
             background-color: #f8f9fa;
+            padding: 20px;
+            color: #343a40;
         }
 
-        .main-container {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .welcome-box {
+        .board-container {
             background-color: white;
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
         }
 
-        .welcome-title {
-            color: #2c3e50;
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-            font-weight: bold;
+        .board-title {
+            color: #1a73e8;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
         }
 
-        .welcome-subtitle {
-            color: #7f8c8d;
-            margin-bottom: 2rem;
-            font-size: 1.2rem;
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
-        .login-btn {
-            padding: 0.8rem 3rem;
-            font-size: 1.2rem;
+        .table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            color: #495057;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container {
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container .input-group {
+            flex-grow: 1;
+            max-width: 600px;
+        }
+
+        .search-container .form-select,
+        .search-container .form-control {
+            border: 1px solid #dee2e6;
+            box-shadow: none;
+        }
+
+        .search-container .form-select:focus,
+        .search-container .form-control:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
+        }
+
+        .write-btn {
+            background-color: #1a73e8;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        .write-btn:hover {
+            background-color: #1557b0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 115, 232, 0.3);
+        }
+
+        .pagination {
+            margin-top: 2rem;
+        }
+
+        .pagination .page-link {
+            color: #1a73e8;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            border-radius: 5px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e8f0fe;
+            color: #1557b0;
+        }
+
+        .search-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 5px;
             transition: all 0.3s ease;
         }
 
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        .search-btn:hover {
+            background-color: #1557b0;
         }
 
-        .company-logo {
-            margin-bottom: 2rem;
-            width: 100px;
-            height: auto;
+        /* 조회수와 날짜 스타일 */
+        .text-views {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .text-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        /* 게시글 제목 스타일 */
+        .post-title {
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .post-title:hover {
+            color: #1a73e8;
+        }
+
+        /* 검색 영역과 글쓰기 버튼을 포함하는 컨테이너 스타일 */
+        .board-container .d-flex {
+            margin-bottom: 1.5rem;
+        }
+
+        /* 검색창 반응형 조정 */
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .search-container .input-group {
+                width: 100%;
+            }
+            
+            .write-btn {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="main-container">
-        <div class="welcome-box">
-            <!-- 로고 이미지 (선택사항) -->
-            <img src="https://via.placeholder.com/100" alt="Company Logo" class="company-logo">
+    <div class="container">
+        <div class="board-container">
+            <h2 class="board-title">게시판</h2>
+            
+            <!-- 검색창과 글쓰기 버튼을 포함하는 상단 영역 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="search-container d-flex align-items-center flex-grow-1">
+                    <div class="input-group" style="flex-grow: 1; max-width: 600px;">
+                        <select class="form-select" id="searchType" style="max-width: 100px;">
+                            <option value="subject">제목</option>
+                            <option value="content">내용</option>
+                            <option value="name">작성자</option>
+                        </select>
+                        <input type="text" class="form-control" id="searchKeyword" 
+                               placeholder="검색어를 입력하세요" oninput="searchPosts()">
+                    </div>
+                    <button class="btn write-btn text-white ms-2" onclick="showWriteModal()">
+                        <i class="bi bi-pencil-square"></i> 글쓰기
+                    </button>
+                </div>
+            </div>
 
-            <h1 class="welcome-title">CRM System</h1>
-            <p class="welcome-subtitle">고객 관리 시스템에 오신 것을 환영합니다</p>
+            <!-- 게시글 테이블 -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="10%" class="text-center">번호</th>
+                        <th width="45%">제목</th>
+                        <th width="15%" class="text-center">작성자</th>
+                        <th width="20%" class="text-center">작성일</th>
+                        <th width="10%" class="text-center">조회수</th>
+                    </tr>
+                </thead>
+                <tbody id="postList">
+                    <!-- 게시글 목록이 여기에 동적으로 추가됨 -->
+                </tbody>
+            </table>
 
-            <button onclick="location.href='/login'" class="btn btn-primary btn-lg login-btn">
-                로그인
-            </button>
+            <!-- 페이지네이션 -->
+            <div class="row mt-4">
+                <div class="col">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!-- 페이징 버튼이 여기에 동적으로 추가됨 -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <div class="mt-4">
-                <small class="text-muted">
-                    계정이 없으신가요?
-                    <a href="/signup" class="text-decoration-none">회원가입</a>
-                </small>
+    <!-- 글쓰기 모달 -->
+    <div class="modal fade" id="writeModal" tabindex="-1" aria-labelledby="writeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- 모달 내용이 여기에 동적으로 로드됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 게시글 조회 모달 추가 -->
+    <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- 모달 내용이 여기에 동적으로 로드됨 -->
             </div>
         </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let currentPage = 1;
+        const postsPerPage = 10;
+        let totalPosts = 0;
+
+        // 페이지 로드 시 게시글 목록 가져오기
+        document.addEventListener('DOMContentLoaded', function () {
+            loadPosts();
+        });
+
+        // 게시글 목록 불러오기
+        function loadPosts() {
+            fetch('/api/post')
+                .then(response => response.json())
+                .then(data => {
+                    totalPosts = data.length;
+                    displayPosts(data);
+                    updatePagination();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('게시글을 불러오는 중 오류가 발생했습니다.');
+                });
+        }
+
+        // 게시글 표시
+        function displayPosts(data) {
+            const postList = document.getElementById('postList');
+            postList.innerHTML = '';
+
+            // 현재 페이지에 해당하는 게시글만 표시
+            const startIndex = (currentPage - 1) * postsPerPage;
+            const endIndex = startIndex + postsPerPage;
+            const currentPagePosts = data.slice(startIndex, endIndex);
+
+            currentPagePosts.forEach(post => {
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.onclick = () => viewPost(post.num);
+                row.innerHTML = `
+                    <td>${post.num}</td>
+                    <td>${post.subject}</td>
+                    <td>${post.name}</td>
+                    <td>${post.registDay}</td>
+                    <td>${post.hit}</td>
+                `;
+                postList.appendChild(row);
+            });
+        }
+
+        // 페이지네이션 업데이트
+        function updatePagination() {
+            const totalPages = Math.ceil(totalPosts / postsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // 페이지 버튼 최대 7개 표시 (이전, 1~5, 다음)
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+
+            // startPage 조정
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+
+            // 이전 버튼
+            if (currentPage > 1) {
+                pagination.innerHTML += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">이전</a>
+                    </li>
+                `;
+            }
+
+            // 페이지 번호
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.innerHTML += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    </li>
+                `;
+            }
+
+            // 다음 버튼
+            if (currentPage < totalPages) {
+                pagination.innerHTML += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">다음</a>
+                    </li>
+                `;
+            }
+        }
+
+        // 페이지 변경
+        function changePage(page) {
+            currentPage = page;
+            loadPosts();
+        }
+
+        // 실시간 검색 함수
+        function searchPosts() {
+            const searchType = document.getElementById('searchType').value;
+            const keyword = document.getElementById('searchKeyword').value.trim();
+
+            if (!keyword) {
+                // 검색어가 없으면 전체 목록 표시
+                loadPosts();
+                return;
+            }
+
+            fetch(`/api/post/search?type=${searchType}&keyword=${encodeURIComponent(keyword)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('검색 중 오류가 발생했습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    totalPosts = data.length;
+                    currentPage = 1; // 검색 결과의 첫 페이지로 이동
+                    displayPosts(data);
+                    updatePagination();
+
+                    // 검색 결과가 없는 경우
+                    if (data.length === 0) {
+                        document.getElementById('postList').innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="bi bi-search" style="font-size: 2rem; color: #6c757d;"></i>
+                                    <p class="mt-3 text-muted">검색 결과가 없습니다.</p>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('검색 중 오류가 발생했습니다.');
+                });
+        }
+
+        // 검색 타입 변경 시에도 검색 실행
+        document.getElementById('searchType').addEventListener('change', searchPosts);
+
+        // 검색 초기화 (전체 목록으로 돌아가기)
+        function resetSearch() {
+            document.getElementById('searchKeyword').value = '';
+            loadPosts();
+        }
+
+        // 게시글 상세보기 함수
+        function viewPost(num) {
+            console.log('Viewing post:', num);
+
+            fetch(`/api/post/${num}`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('게시글을 찾을 수 없습니다.');
+                    }
+                    return response.json();
+                })
+                .then(post => {
+                    console.log('Post data:', post);
+
+                    // null 체크 추가
+                    const content = post.content || '';
+                    const subject = post.subject || '';
+                    const name = post.name || '';
+                    const registDay = post.registDay || '';
+                    const hit = post.hit || 0;
+
+                    // 모달 내용 설정
+                    document.querySelector('#viewModal .modal-content').innerHTML = `
+                        <div class="modal-header">
+                            <h5 class="modal-title">${subject}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <span class="text-muted">작성자: ${name}</span>
+                                    <span class="text-muted ms-3">작성일: ${registDay}</span>
+                                </div>
+                                <span class="text-muted">조회수: ${hit}</span>
+                            </div>
+                            <div class="border-top pt-3">
+                                <div class="content">
+                                    ${content.replace(/\n/g, '<br>')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        </div>
+                    `;
+
+                    // 모달 표시
+                    const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
+                    viewModal.show();
+
+                    // 게시글 목록 새로고침 (조회수 업데이트를 반영하기 위해)
+                    loadPosts();
+                })
+                .catch(error => {
+                    console.error('Error details:', error);
+                    alert('게시글을 불러오는 중 오류가 발생했습니다.');
+                });
+        }
+
+        // 글쓰기 버튼 클릭 이벤트 수정
+        document.querySelector('.write-btn').href = '#';
+        document.querySelector('.write-btn').onclick = function (e) {
+            e.preventDefault();
+
+            // write.html 내용 가져오기
+            fetch('/html/write.html')
+                .then(response => response.text())
+                .then(html => {
+                    // HTML 파싱
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    // 필요한 부분만 추출 (form 내용)
+                    const formContent = doc.querySelector('form').outerHTML;
+
+                    // 모달 내용 설정
+                    document.querySelector('.modal-content').innerHTML = `
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="writeModalLabel">글쓰기</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ${formContent}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                            <button type="button" class="btn btn-primary" onclick="submitPost()">등록</button>
+                        </div>
+                    `;
+
+                    // 모달 표시
+                    const writeModal = new bootstrap.Modal(document.getElementById('writeModal'));
+                    writeModal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('글쓰기 폼을 불러오는 중 오류가 발생했습니다.');
+                });
+        };
+
+        // 게시글 등록 함수 수정
+        function submitPost() {
+            const form = document.querySelector('#writeModal form');
+            const formData = new FormData(form);
+            const postData = {
+                subject: formData.get('subject'),
+                content: formData.get('content'),
+                name: formData.get('name'),
+                id: formData.get('id')
+            };
+
+            fetch('/api/post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(postData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 모달 닫기
+                        const writeModal = bootstrap.Modal.getInstance(document.getElementById('writeModal'));
+                        writeModal.hide();
+
+                        // 폼 초기화
+                        form.reset();
+
+                        // 게시글 목록 새로고침
+                        loadPosts();
+
+                        alert('게시글이 등록되었습니다.');
+                    } else {
+                        throw new Error('게시글 등록 실패');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('게시글 등록 중 오류가 발생했습니다.');
+                });
+        }
+    </script>
 </body>
 
 </html>
